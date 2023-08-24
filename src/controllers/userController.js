@@ -1,12 +1,24 @@
-const User = require("../model/user");
-const { Sequelize } = require("sequelize");
+// const User = require("../models/user");
+const {
+  successCode,
+  failCode,
+  errorCode,
+  createCode,
+  notFoundCode,
+} = require("../config/reponse");
 
-const Op = Sequelize.Op;
+const initModels = require("../models/init-models");
+const sequelize = require("../models/index");
+const model = initModels(sequelize);
 
 // Get All User
 const getAllUser = async (req, res) => {
-  let data = await User.findAll();
-  res.status(200).send(data);
+  let data = await model.user.findAll();
+  try {
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
 };
 
 // Get User By ID
@@ -14,16 +26,18 @@ const getUserByID = async (req, res) => {
   let { user_id } = req.params;
 
   try {
-    const user = await User.findByPk(Number(user_id));
+    const user = await model.user.findByPk(Number(user_id));
     if (user) {
-      res.status(200).send(user);
+      // res.status(200).send(user);
+      successCode(res, user, "Success");
     } else {
-      res.status(404).send("User not found");
+      notFoundCode(res, "User not found");
+      // res.status(404).send("User not found");
     }
   } catch (error) {
-    res.status(500).send("Internal server error");
+    errorCode(res, "Internal server error !");
   }
-  res.status(200).send(data);
+  // res.status(200).send(data);
 };
 
 const createUser = async (req, res) => {
@@ -36,44 +50,54 @@ const createUser = async (req, res) => {
       pass_word,
     };
 
-    await User.create(modelUser);
+    await model.user.create(modelUser);
 
-    res.status(201).send("Create User Success !");
+    createCode(res, modelUser, "Create User Success !");
+    // res.status(201).send("Create User Success !");
   } catch (err) {
     console.log(err);
-    res.status(500).send("ERROR !");
+    errorCode(res, "Internal server error !");
+    // res.status(500).send("ERROR !");
   }
 };
 
 const updateUser = async (req, res) => {
-  let { user_id } = req.params;
-  let { full_name, email, pass_word } = req.body;
+  try {
+    let { user_id } = req.params;
+    let { full_name, email, pass_word } = req.body;
 
-  let modelUser = {
-    full_name,
-    email,
-    pass_word,
-  };
+    let modelUser = {
+      full_name,
+      email,
+      pass_word,
+    };
 
-  await User.update(modelUser, {
-    where: {
-      user_id,
-    },
-  });
-  res.status(200).send("Update user");
+    await model.user.update(modelUser, {
+      where: {
+        user_id,
+      },
+    });
+    // res.status(200).send("Update user");
+    successCode(res, modelUser, "Update user");
+  } catch (error) {
+    console.log(error);
+    errorCode(res, "Internal server error !");
+  }
 };
 
 const deleteUser = async (req, res) => {
   try {
     let { user_id } = req.params;
-    await User.destroy({
+    await model.user.destroy({
       where: {
         user_id,
       },
     });
-    res.status(200).send("Delete User Success !");
+    successCode(res, "", "Success");
+    // res.status(200).send("Delete User Success !");
   } catch (error) {
     console.log(error);
+    errorCode(res, "Internal server error !");
   }
 };
 

@@ -11,9 +11,9 @@ const {
 
 userRoute.get("/list", getAllUser);
 
-userRoute.post("/create", createUser);
-
 userRoute.get("/:user_id", getUserByID);
+
+userRoute.post("/create", createUser);
 
 userRoute.put("/update/:user_id", updateUser);
 
