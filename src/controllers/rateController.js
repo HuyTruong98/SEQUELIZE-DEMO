@@ -30,7 +30,7 @@ const createRate = async (req, res) => {
 
     createCode(res, body, "Create rate success !");
   } catch (error) {
-    console.log(error);
+    console.error(error);
     errorCode(res, "Internal server error !");
   }
 };

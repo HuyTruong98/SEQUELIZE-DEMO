@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 
 app.use(express.json());
+app.use(express.static(".")); // => định vị thư mục để lấy tài nguyên
 
 const cors = require("cors");
 app.use(cors());
