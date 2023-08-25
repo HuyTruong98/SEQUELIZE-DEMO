@@ -5,7 +5,7 @@ const {
   errorCode,
   createCode,
   notFoundCode,
-} = require("../config/reponse");
+} = require("../config/response");
 
 const initModels = require("../models/init-models");
 const sequelize = require("../models/index");
