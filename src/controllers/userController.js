@@ -101,7 +101,33 @@ const deleteUser = async (req, res) => {
   }
 };
 
-const signUp = (req, res) => {};
+const signUp = async (req, res) => {
+  try {
+    let { full_name, email, pass_word } = req.body;
+
+    let modelUser = {
+      full_name,
+      email,
+      pass_word,
+    };
+
+    const checkEmail = await model.user.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (checkEmail) {
+      failCode(res, email, "Email already exists !");
+    } else {
+      await model.user.create(modelUser);
+      createCode(res, modelUser, "Create User Success !");
+    }
+  } catch (err) {
+    console.log(err);
+    errorCode(res, "Internal server error !");
+  }
+};
 
 const login = (req, res) => {};
 

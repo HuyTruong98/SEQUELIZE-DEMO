@@ -7,6 +7,8 @@ const {
   createUser,
   getUserByID,
   updateUser,
+  login,
+  signUp,
 } = require("../controllers/userController");
 
 userRoute.get("/list", getAllUser);
@@ -14,6 +16,10 @@ userRoute.get("/list", getAllUser);
 userRoute.get("/:user_id", getUserByID);
 
 userRoute.post("/create", createUser);
+
+userRoute.post("/login", login);
+
+userRoute.post("/sign-up", signUp);
 
 userRoute.put("/update/:user_id", updateUser);
 
