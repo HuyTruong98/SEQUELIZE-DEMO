@@ -101,10 +101,16 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const signUp = (req, res) => {};
+
+const login = (req, res) => {};
+
 module.exports = {
   getAllUser,
   getUserByID,
   createUser,
   updateUser,
   deleteUser,
+  signUp,
+  login,
 };
