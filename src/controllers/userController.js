@@ -10,6 +10,8 @@ const {
 const initModels = require("../models/init-models");
 const sequelize = require("../models/index");
 const model = initModels(sequelize);
+const bcrypt = require("bcrypt");
+const { generateToken } = require("../config/jwt");
 
 // Get All User
 const getAllUser = async (req, res) => {
@@ -103,12 +105,12 @@ const deleteUser = async (req, res) => {
 
 const signUp = async (req, res) => {
   try {
-    let { full_name, email, pass_word } = req.body;
+    const { full_name, email, pass_word } = req.body;
 
-    let modelUser = {
+    const modelUser = {
       full_name,
       email,
-      pass_word,
+      pass_word: bcrypt.hashSync(pass_word, 10),
     };
 
     const checkEmail = await model.user.findOne({
@@ -128,8 +130,33 @@ const signUp = async (req, res) => {
     errorCode(res, "Internal server error !");
   }
 };
+// đăng ký => lấy thông tin user => mã pwd => lưu data xuống database
+// login => kiếm tra email => kiếm tra pwd (hàm mã hóa)
 
-const login = (req, res) => {};
+const login = async (req, res) => {
+  const { email, pass_word } = req.body;
+
+  const checkEmail = await model.user.findOne({
+    where: {
+      email,
+    },
+  });
+
+  if (checkEmail) {
+    // check password dữ liệu thô và dữ liệu đã mã hóa
+    const checkPass = bcrypt.compareSync(pass_word, checkEmail.pass_word);
+
+    if (checkPass) {
+      const token = generateToken({ data: {...checkEmail, pass_word: ''} });
+      // login thanh cong
+      successCode(res, token, "Login success.");
+    } else {
+      failCode(res, "", "Password is incorrect !");
+    }
+  } else {
+    failCode(res, "", "Email is incorrect !");
+  }
+};
 
 module.exports = {
   getAllUser,

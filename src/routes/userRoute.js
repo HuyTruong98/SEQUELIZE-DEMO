@@ -9,21 +9,23 @@ const {
   updateUser,
   login,
   signUp,
+  deleteUser,
 } = require("../controllers/userController");
 
-userRoute.get("/list", getAllUser);
+const { checkToken } = require("../controllers/authController");
 
-userRoute.get("/:user_id", getUserByID);
+userRoute.get("/list", checkToken, getAllUser);
 
-userRoute.post("/create", createUser);
+userRoute.get("/:user_id", checkToken, getUserByID);
+
+userRoute.post("/create",checkToken, createUser);
 
 userRoute.post("/login", login);
 
 userRoute.post("/sign-up", signUp);
 
-userRoute.put("/update/:user_id", updateUser);
+userRoute.put("/update/:user_id", checkToken, updateUser);
 
-//DELETE
-// userRoute.delete("/:user_id", deleteUser);
+userRoute.delete("/:user_id", checkToken, deleteUser);
 
 module.exports = userRoute;
