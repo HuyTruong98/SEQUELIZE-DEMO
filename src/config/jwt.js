@@ -1,20 +1,31 @@
 const jwt = require("jsonwebtoken");
+const SECRET_KEY = "private";
 
 const generateToken = (data) => {
-  const token = jwt.sign(data, "private", { expiresIn: "5m" });
-
-  return token;
+  return jwt.sign(data, SECRET_KEY, { expiresIn: "5m" });
 };
 
 // kiêm tra token có hợp lệ hay không
 const verifyToken = (token) => {
-  const checkToken = jwt.verify(token, "private");
-  return checkToken;
+  // const checkToken = jwt.verify(token, SECRET_KEY);
+  // return checkToken;
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    return decoded;
+  } catch (error) {
+    return null;
+  }
 };
 
 const decodeToken = (token) => {
-  const decode = jwt.decode(token);
-  return decode;
+  // const decode = jwt.decode(token);
+  // return decode;
+  try {
+    const decoded = jwt.decode(token, { complete: true });
+    return decoded;
+  } catch (error) {
+    return null;
+  }
 };
 
 module.exports = {

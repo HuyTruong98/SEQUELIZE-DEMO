@@ -11,9 +11,11 @@ const {
 
 const { uploadSingle } = require("../controllers/uploadController");
 const { upload } = require("../config/uploadConfig");
-const { checkToken } = require("../controllers/authController");
+const { authenticateToken } = require("../controllers/authController");
 
-foodRoute.post("/upload",checkToken, upload.single("data"), uploadSingle);
+foodRoute.use(authenticateToken);
+
+foodRoute.post("/upload", upload.single("data"), uploadSingle);
 
 foodRoute.get("/list", getFood);
 
