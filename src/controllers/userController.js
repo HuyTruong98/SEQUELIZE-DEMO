@@ -106,6 +106,7 @@ const deleteUser = async (req, res) => {
 const signUp = async (req, res) => {
   try {
     const { full_name, email, pass_word } = req.body;
+    console.log(req.body);
 
     const modelUser = {
       full_name,
@@ -147,7 +148,7 @@ const login = async (req, res) => {
     const checkPass = bcrypt.compareSync(pass_word, checkEmail.pass_word);
 
     if (checkPass) {
-      const token = generateToken({ data: {...checkEmail, pass_word: ''} });
+      const token = generateToken({ data: { ...checkEmail, pass_word: "" } });
       // login thanh cong
       successCode(res, token, "Login success.");
     } else {

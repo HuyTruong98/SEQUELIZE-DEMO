@@ -10,21 +10,82 @@ const initModels = require("../models/init-models");
 const sequelize = require("../models/index");
 const model = initModels(sequelize);
 
-const getFood = async (req, res) => {
-  const data = await model.food.findAll();
+const { Op } = require("sequelize");
 
-  // order với user và food
-  // const data = await model.food.findAll({
-  //   include: ["user_id_user_orders"],
-  // });
+// search theo name hoặc desc
+const getFood = async (req, res) => {
+  const { keyword, page, perPage } = req.query;
+  const options = {
+    limit: parseInt(perPage) || 10,
+    offset: ((parseInt(page) || 1) - 1) * parseInt(perPage) || 0,
+  };
 
   try {
+    let data;
+
+    if (keyword) {
+      data = await model.food.findAndCountAll({
+        where: {
+          [Op.or]: [
+            {
+              food_name: {
+                [Op.like]: `%${keyword}%`,
+              },
+            },
+            {
+              desc: {
+                [Op.like]: `%${keyword}%`,
+              },
+            },
+          ],
+        },
+        ...options,
+      });
+    } else {
+      data = await model.food.findAndCountAll(options);
+    }
+
     successCode(res, data, "Success");
   } catch (error) {
-    console.log(error);
+    console.error(error);
     errorCode(res, "Internal server error !");
   }
 };
+
+// search theo riêng lẻ name hoặc desc
+// const getFood = async (req, res) => {
+//   const query = req.query;
+
+//   // order với user và food
+//   // const data = await model.food.findAll({
+//   //   include: ["user_id_user_orders"],
+//   // });
+
+//   let whereCondition = {};
+
+//   if (query.food_name) {
+//     whereCondition.food_name = {
+//       [Op.iLike]: `%${query.food_name}%`,
+//     };
+//   }
+
+//   if (query.desc) {
+//     whereCondition.desc = {
+//       [Op.iLike]: `%${query.desc}%`,
+//     };
+//   }
+
+//   try {
+//     const data = await model.food.findAll({
+//       where: whereCondition,
+//     });
+
+//     successCode(res, data, "Success");
+//   } catch (error) {
+//     console.log(error);
+//     errorCode(res, "Internal server error !");
+//   }
+// };
 
 const getFoodById = async (req, res) => {
   const { food_id } = req.params;
